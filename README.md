@@ -19,7 +19,7 @@ How to user:
 1. Select the ml-project-notebook in the list and select "START" from the header. The notebook should now be starting.
 2. Once the notebook has started, click "OPEN JUPYTERLAB" to access the [JupyterLab](https://jupyterlab.readthedocs.io/en/stable/#). Work is done in the "TDT4171-project"-folder.
    NOTE: This folder is Git-enabled and connected to this repo. You can use git from either the terminal or the built-in tools in JupyterLab.
-3. Once you've completed your work, return to the notebook list and stop the notebook by selecting it again and clicking "STOP". This is _*very*_ important, as it saves on Cloud Credits and allows us to use the project loinger.
+3. Once you've completed your work, return to the notebook list and stop the notebook by selecting it again and clicking "STOP". This is _*very*_ important, as it saves on Cloud Credits and allows us to use the project longer.
 
 ## Report
 
