@@ -12,20 +12,20 @@ import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
 
+# Define filepaths
+data_file_path = 'Data/first_100000_processed_reviews2.csv'
+model_file_path = 'Models/base_model2.h5'
+
 # The maximum number of words to be used. (most frequent)
 vocabulary_size = 50000
 # Max number of words in each complaint.
 max_review_size = 100
-# This is fixed.
-EMBEDDING_DIM = 250
 
-df = pd.read_csv('Data/first_100000_processed_reviews.csv')
+df = pd.read_csv(data_file_path)
 
 print(df.head())
 print("Length of corpus:", df.shape[0])
 
-df = df.dropna()
-print(df.shape)
 
 # Get corpus
 corpus = df['training'].tolist()
@@ -39,11 +39,11 @@ print('#unique tokens:', total_words-1)
 
 # Create training vectors with padding, where applicable, is at the end 
 X = tokenizer.texts_to_sequences(corpus)
-X = pad_sequences(X, maxlen=max_review_size, padding='post')
+X = pad_sequences(X, maxlen=max_review_size)
 print('Shape of training data:', X.shape)
 
 # Get labels
-Y = df[' label'].to_numpy()-1
+Y = df['label'].to_numpy()
 print('Shape of label tensor:', len(Y))
 
 # Split features and labels into training and test data
@@ -55,7 +55,7 @@ print("Shape of test labels: ", Y_test.shape)
 
 # Define model
 model = Sequential()
-model.add(Embedding(vocabulary_size, EMBEDDING_DIM, input_length=X.shape[1]))
+model.add(Embedding(vocabulary_size, 64, input_length=X.shape[1]))
 model.add(SpatialDropout1D(0.2))
 model.add(LSTM(32, dropout=0.2, recurrent_dropout=0.2))
 model.add(Dense(5, activation='softmax'))
@@ -66,22 +66,22 @@ epochs = 2
 batch_size = 128
 
 try:
-    model = tf.keras.models.load_model('Models/lstm_spatialdropout_02__units_32__dropout_02__recurrent_dropout_02__softmax__adam__epochs_2__batchsize_128.h5')
+    model = tf.keras.models.load_model(model_file_path)
 except:
-    history = model.fit(X_train, Y_train, epochs=epochs, batch_size=batch_size,validation_split=0.1)
-    model.save('Models/lstm_spatialdropout_02__units_32__dropout_02__recurrent_dropout_02__softmax__adam__epochs_2__batchsize_128.h5')
-    
-    plt.title('Loss')
-    plt.plot(history.history['loss'], label='train')
-    plt.plot(history.history['val_loss'], label='test')
-    plt.legend()
-    plt.show()
+history = model.fit(X_train, Y_train, epochs=epochs, batch_size=batch_size,validation_split=0.1)
+model.save(model_file_path)
 
-    plt.title('Accuracy')
-    plt.plot(history.history['accuracy'], label='train')
-    plt.plot(history.history['val_accuracy'], label='test')
-    plt.legend()
-    plt.show()
+plt.title('Loss')
+plt.plot(history.history['loss'], label='train')
+plt.plot(history.history['val_loss'], label='test')
+plt.legend()
+plt.show()
+
+plt.title('Accuracy')
+plt.plot(history.history['accuracy'], label='train')
+plt.plot(history.history['val_accuracy'], label='test')
+plt.legend()
+plt.show()
 
 accr = model.evaluate(X_test,Y_test, verbose=0)
 print('Test set\n  Loss: {:0.3f}\n  Accuracy: {:0.3f}'.format(accr[0],accr[1]))
