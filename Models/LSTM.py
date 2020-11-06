@@ -14,14 +14,14 @@ import matplotlib.pyplot as plt
 
 # Define filepaths
 data_file_path = 'Data/first_100000_processed_reviews2.csv'
-model_file_path = 'Models/base_model2.h5'
+model_file_path = 'Models/base_model2_5epochs.h5'
 
-# The maximum number of words to be used. (most frequent)
+# The maximum number of words to be used, only most frequent
 vocabulary_size = 50000
-# Max number of words in each complaint.
+# Max number of words in each review
 max_review_size = 100
 
-df = pd.read_csv(data_file_path)
+df = pd.read_csv(data_file_path, error_bad_lines=False, engine="python") # One of the lines (5945667) apparently contains an EOF-character
 
 print(df.head())
 print("Length of corpus:", df.shape[0])
@@ -57,31 +57,31 @@ print("Shape of test labels: ", Y_test.shape)
 model = Sequential()
 model.add(Embedding(vocabulary_size, 64, input_length=X.shape[1]))
 model.add(SpatialDropout1D(0.2))
-model.add(LSTM(32, dropout=0.2, recurrent_dropout=0.2))
+model.add(LSTM(32, dropout=0.2))
 model.add(Dense(5, activation='softmax'))
 model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-
-# Define constants for training 
-epochs = 2
-batch_size = 128
 
 try:
     model = tf.keras.models.load_model(model_file_path)
 except:
-history = model.fit(X_train, Y_train, epochs=epochs, batch_size=batch_size,validation_split=0.1)
-model.save(model_file_path)
+  # Define constants for training 
+  epochs = 5
+  batch_size = 128
+  
+  history = model.fit(X_train, Y_train, epochs=epochs, batch_size=batch_size,validation_split=0.1)
+  model.save(model_file_path)
 
-plt.title('Loss')
-plt.plot(history.history['loss'], label='train')
-plt.plot(history.history['val_loss'], label='test')
-plt.legend()
-plt.show()
+  plt.title('Loss')
+  plt.plot(history.history['loss'], label='train')
+  plt.plot(history.history['val_loss'], label='test')
+  plt.legend()
+  plt.show()
 
-plt.title('Accuracy')
-plt.plot(history.history['accuracy'], label='train')
-plt.plot(history.history['val_accuracy'], label='test')
-plt.legend()
-plt.show()
+  plt.title('Accuracy')
+  plt.plot(history.history['accuracy'], label='train')
+  plt.plot(history.history['val_accuracy'], label='test')
+  plt.legend()
+  plt.show()
 
 accr = model.evaluate(X_test,Y_test, verbose=0)
 print('Test set\n  Loss: {:0.3f}\n  Accuracy: {:0.3f}'.format(accr[0],accr[1]))
