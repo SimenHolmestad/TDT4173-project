@@ -12,7 +12,11 @@ import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
 
-# Define filepaths
+"""
+--- Marks the beginning of where a new cell should start in a notebook
+"""
+
+# --- Define filepaths
 data_file_path = 'Data/first_100000_processed_reviews2.csv'
 model_file_path = 'Models/base_model2_5epochs.h5'
 
@@ -26,18 +30,16 @@ df = pd.read_csv(data_file_path, error_bad_lines=False, engine="python") # One o
 print(df.head())
 print("Length of corpus:", df.shape[0])
 
-
-# Get corpus
+# --- Get corpus
 corpus = df['training'].tolist()
 
 # Tokenize the corpus with the `vocabulary_size` most frequent words
 tokenizer = Tokenizer(num_words=vocabulary_size)
 tokenizer.fit_on_texts(corpus)
-total_words = len(tokenizer.word_index) + 1
-print('Total words:', total_words)
-print('#unique tokens:', total_words-1)
+total_tokens = len(tokenizer.word_index)
+print('#unique tokens:', total_tokens)
 
-# Create training vectors with padding, where applicable, is at the end 
+# ---  Create training vectors with padding, where applicable, is at the end 
 X = tokenizer.texts_to_sequences(corpus)
 X = pad_sequences(X, maxlen=max_review_size)
 print('Shape of training data:', X.shape)
@@ -46,14 +48,14 @@ print('Shape of training data:', X.shape)
 Y = df['label'].to_numpy()
 print('Shape of label tensor:', len(Y))
 
-# Split features and labels into training and test data
+# --- Split features and labels into training and test data
 X_train, X_test, Y_train, Y_test = train_test_split(X,Y, test_size = 0.10, random_state = 42)
 print("Shape of training features: ", X_train.shape)
 print("Shape of training labels: ", Y_train.shape)
 print("Shape of test features: ", X_test.shape)
 print("Shape of test labels: ", Y_test.shape)
 
-# Define model
+# --- Define model
 model = Sequential()
 model.add(Embedding(vocabulary_size, 64, input_length=X.shape[1]))
 model.add(SpatialDropout1D(0.2))
@@ -61,6 +63,7 @@ model.add(LSTM(32, dropout=0.2))
 model.add(Dense(5, activation='softmax'))
 model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
+# --- Load existing model or train a new one
 try:
     model = tf.keras.models.load_model(model_file_path)
 except:
