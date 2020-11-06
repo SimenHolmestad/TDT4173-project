@@ -63,6 +63,16 @@ def process_text(text):
     # Remove stopwords
     text = remove_stopwords(text)
 
+    if text == "":
+        return text, "Review was empty after removing stop words"
+
+    # Find number of words after stop words are removed
+    number_of_words = len(text.split(" "))
+
+    # Return error if number of words after removing stop words is more than 100.
+    if number_of_words > 100:
+        return text, "Review contained more than 100 words after removing stop words. Number of words where {}".format(str(number_of_words))
+
     # Return successfully converted text
     return text, None
 
@@ -83,7 +93,7 @@ def main():
     number_of_lines_to_read = 1000000000
     output_file = open(output_filepath, "w")
     failed_text_file = open("failed_text_file.txt", "w")
-    output_file.write("training, label\n")
+    output_file.write("training,label\n")
 
     cnt = 0
     with open(filepath) as fp:
@@ -99,15 +109,17 @@ def main():
             text = review_dict["text"]
 
             # Process text
-            text, error = process_text(text)
+            text, error_message = process_text(text)
 
             # Write to separate file if an error occured
-            if (error):
+            if (error_message):
                 text_without_newlines = text.replace("\n", "")
-                failed_text_file.write(text_without_newlines + " - error: " + error + "\n")
+                failed_text_file.write(text_without_newlines + " - error: " + error_message + "\n")
+                line = fp.readline()
+                continue
 
             # Write output to file
-            output_file.write("\"" + text + "\", " + str(stars) + "\n")
+            output_file.write("\"" + text + "\"," + str(int(stars) - 1) + "\n")
 
             # Read next line
             line = fp.readline()

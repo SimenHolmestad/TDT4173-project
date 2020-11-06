@@ -26,7 +26,7 @@ def plot_review_length_distribution(review_lengths):
     plt.xlabel("Amount of words for review")
     plt.ylabel("Number of reviews")
 
-    plt.savefig("Plots/Lengts_of_reviews.png", dpi=300)
+    plt.savefig("Plots/Lengths_of_reviews.png", dpi=300)
 
     plt.clf()
 
@@ -78,7 +78,7 @@ def main():
         while line and cnt < max_number_of_lines:
             cnt += 1
 
-            training, label = line.split("\", ")
+            training, label = line.split("\",")
             label = float(label)
 
             review_ratings.append(label)
