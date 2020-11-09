@@ -21,6 +21,12 @@ How to user:
    NOTE: This folder is Git-enabled and connected to this repo. You can use git from either the terminal or the built-in tools in JupyterLab.
 3. Once you've completed your work, return to the notebook list and stop the notebook by selecting it again and clicking "STOP". This is _*very*_ important, as it saves on Cloud Credits and allows us to use the project longer.
 
+## Deploying the cloud function to google cloud
+The entire backend of the website can be found in `source/cloud_function`. To export the function to google cloud using the cloud sdk, run the command:
+```
+gcloud functions deploy function-1 --trigger-http --runtime python38 --allow-unauthenticated --region europe-west1 --memory 4096MB --entry-point main
+```
+from the `source/cloud_function`-directory.
 ## Report
 
 The link for editing the report can be found here: <https://www.overleaf.com/9135544627bjtbdxctxqhm>.
