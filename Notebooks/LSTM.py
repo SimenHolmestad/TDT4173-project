@@ -1,5 +1,5 @@
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-from tensorflow.keras.layers import Embedding, LSTM, Dense,  SpatialDropout1D
+from tensorflow.keras.layers import Embedding, LSTM, Dense,  SpatialDropout1D, Bidirectional
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.models import Sequential
 from sklearn.model_selection import train_test_split
@@ -56,10 +56,11 @@ print("Shape of test labels: ", Y_test.shape)
 
 # --- Define model
 model = Sequential()
-model.add(Embedding(vocabulary_size, 64, input_length=X.shape[1]))
+model.add(Embedding(vocabulary_size, 64))
 model.add(SpatialDropout1D(0.2))
-model.add(LSTM(32))
-model.add(Dense(5, activation='softmax'))
+model.add(Bidirectional(LSTM(64)))
+model.add(Dense(64, activation='relu'))
+model.add(Dense(6, activation='softmax'))
 model.compile(loss='sparse_categorical_crossentropy',
               optimizer='adam', metrics=['accuracy'])
 
