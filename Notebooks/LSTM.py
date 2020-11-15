@@ -14,8 +14,8 @@ os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
 """
 
 # --- Define filepaths
-data_file_path = 'Data/output_final2.csv'
-model_file_path = 'Models/base_model2_5epochs.h5'
+data_file_path = 'Data/first_100000_processed_reviews2.csv'
+model_file_path = 'Models/base_model_epochs5.h5'
 
 # The maximum number of words to be used, only most frequent
 vocabulary_size = 50000
@@ -63,29 +63,30 @@ model.add(Dense(5, activation='softmax'))
 model.compile(loss='sparse_categorical_crossentropy',
               optimizer='adam', metrics=['accuracy'])
 
-# --- Load existing model or train a new one
-try:
-    model = tf.keras.models.load_model(model_file_path)
-except:
-    # Define constants for training
-    epochs = 5
-    batch_size = 64
 
-    history = model.fit(X_train, Y_train, epochs=epochs,
-                        batch_size=batch_size, validation_split=0.1)
-    model.save(model_file_path)
+# Define constants for training
+epochs = 5
+batch_size = 64
 
-    plt.title('Loss')
-    plt.plot(history.history['loss'], label='train')
-    plt.plot(history.history['val_loss'], label='test')
-    plt.legend()
-    plt.show()
+history = model.fit(X_train, Y_train, epochs=epochs,
+                    batch_size=batch_size, validation_split=0.1)
+model.save(model_file_path)
 
-    plt.title('Accuracy')
-    plt.plot(history.history['accuracy'], label='train')
-    plt.plot(history.history['val_accuracy'], label='test')
-    plt.legend()
-    plt.show()
+# plt.title('Loss')
+# plt.plot(history.history['loss'], label='train')
+# plt.plot(history.history['val_loss'], label='test')
+# plt.xlabel("Epochs")
+# plt.ylabel("Loss")
+# plt.legend()
+# plt.show()
+
+plt.title('Accuracy for LSTM model')
+plt.plot(history.history['accuracy'], label='train')
+plt.plot(history.history['val_accuracy'], label='test')
+plt.xlabel("Epochs")
+plt.ylabel("Accuracy")
+plt.legend()
+plt.savefig("Plots/accuracy_lstm")
 
 accr = model.evaluate(X_test, Y_test, verbose=0)
 print('Test set\n  Loss: {:0.3f}\n  Accuracy: {:0.3f}'.format(
