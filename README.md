@@ -6,17 +6,14 @@ The project is hosted on github at <https://github.com/SimenHolmestad/TDT4173-pr
 ## About the dataset
 The Yelp dataset (<https://www.kaggle.com/yelp-dataset/yelp-dataset>) contains a wealth of information from Yelp, a popular website for crowd-sourced reviews of various physical establishments. The dataset contains several categories, of which we are interested in one: The reviews. This data set alone is 5.9GB in size, and contains 5,200,000 user reviews. This should be more than enough to train and test our models.
 
-## How to use Google Cloud AI platform
-The project is developed using [a notebook on GCP AI Platform](https://console.cloud.google.com/ai-platform/notebooks/list/instances?project=tdt4173-ml-project). Please note that you need to be added to the project before trying to access it.
+The entire dataset is not contained in the repo because it is too large. Instead, a file containing the 100,000 first lines in the dataset is found at `Data/first_100000_reviews.json`.
 
-The VM instanced used for the notebook has 2 CPUs, 7.5 GB RAM and a nVIDIA Tesla K80 GPU, as well as persistent storage.
+**Note:** The kaggle website claims that the dataset contains 5,200,000 user reviews. However, when running
+```
+grep review_id yelp_academic_dataset_review.json | sort | uniq | wc -l
+```
 
-How to user:
-
-1. Select the ml-project-notebook in the list and select "START" from the header. The notebook should now be starting.
-2. Once the notebook has started, click "OPEN JUPYTERLAB" to access the [JupyterLab](https://jupyterlab.readthedocs.io/en/stable/#). Work is done in the "TDT4171-project"-folder.
-   NOTE: This folder is Git-enabled and connected to this repo. You can use git from either the terminal or the built-in tools in JupyterLab.
-3. Once you've completed your work, return to the notebook list and stop the notebook by selecting it again and clicking "STOP". This is _*very*_ important, as it saves on Cloud Credits and allows us to use the project longer.
+the result says that there are 8,021,122 unique lines in the file all containing `review_id` , so in reality, there are probably a bit more than 8 million reviews in the dataset.
 
 ## Website
 The group has created a webpage to show how the model is working on new data. The web page is currently hosted on github pages and can be found at <https://simenholmestad.github.io/TDT4173-webpage>.
