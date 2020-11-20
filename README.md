@@ -13,6 +13,13 @@ grep review_id yelp_academic_dataset_review.json | sort | uniq | wc -l
 
 the result says that there are 8,021,122 unique lines in the file all containing `review_id` , so in reality, there are probably a bit more than 8 million reviews in the dataset.
 
+# Requirements
+To install the required python packages needed for the project, run
+```
+pip3 install -r requirements.txt
+```
+from the root folder of the project.
+
 # Repo structure
 Information about folders and important files in the project is found below.
 
