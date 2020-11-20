@@ -6,7 +6,7 @@ plots related to the accuracy and loss of the model.
 
 Run script with:
 
-python3 lstm_model_training.py <file-path-to-original-file> <directory-for-output-files>
+python3 lstm_model_training.py <file-path-to-data-file> <directory-for-output-files>
 """
 
 from tensorflow.keras.preprocessing.sequence import pad_sequences
@@ -70,7 +70,7 @@ def main():
     if len(sys.argv) < 3:
         print("You have to specify a filename for the original file and a filename for the output file")
         print("You should run script as:")
-        print("python3 lstm_model_training.py <file-path-to-original-file> <directory-for-output-files>")
+        print("python3 lstm_model_training.py <file-path-to-data-file> <directory-for-output-files>")
         sys.exit()
 
     data_filepath = sys.argv[1]
