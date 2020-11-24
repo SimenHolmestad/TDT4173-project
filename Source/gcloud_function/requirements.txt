@@ -4,3 +4,4 @@ numpy==1.18.5
 langdetect
 gensim
 tensorflow
+sklearn

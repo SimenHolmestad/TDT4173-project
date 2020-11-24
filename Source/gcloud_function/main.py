@@ -1,11 +1,17 @@
-from langdetect import detect
-import langdetect
-from gensim.parsing.preprocessing import remove_stopwords
-import tensorflow as tf
-from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing.sequence import pad_sequences
+from numpy.lib.function_base import vectorize
+#from langdetect import detect
+#import langdetect
+#from gensim.parsing.preprocessing import remove_stopwords
+#import tensorflow as tf
+#from tensorflow.keras.models import load_model
+#from tensorflow.keras.preprocessing.sequence import pad_sequences
+try:
+    import cPickle as pickle
+except:
+    import pickle
 
-CHARACTERS_TO_REMOVE = [";", "%", "=", "&", ":", "|", "/", "\"", ".", ",", "!", "(", ")", "-", "+", "–", "_", "\n", "?", "*", "$", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "#"]
+CHARACTERS_TO_REMOVE = [";", "%", "=", "&", ":", "|", "/", "\"", ".", ",", "!",
+                        "(", ")", "-", "+", "–", "_", "\n", "?", "*", "$", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "#"]
 
 
 def process_text(text):
@@ -76,7 +82,7 @@ def do_prediction(text):
     return list(model.predict(X)[0])
 
 
-def process_message(message):
+def process_LSTM_message(message):
     processed_text, error_message = process_text(message)
     if (error_message):
         return "Error: " + error_message
@@ -94,22 +100,40 @@ def process_message(message):
     return return_text
 
 
-def hello_world(request):
+def load_from_dump(filename):
+    with open(filename, "rb") as file:
+        return pickle.load(file)
+
+
+def process_kNN_message(message):
+    vectorizer = load_from_dump("TFIDFvectorizer.bin")
+    kNNClassifier = load_from_dump("kNNClassifier.bin")
+
+    transformed_message = vectorizer.transform([message])
+    final_prediction = kNNClassifier.predict(transformed_message)[0] + 1
+    return_text = "Final prediction is: " + str(final_prediction) + " star"
+
+    if final_prediction != 1:
+        return_text += "s"
+    return return_text
+
+
+def handle_request(request):
     """Responds to any HTTP request.
     Args:
         request (flask.Request): HTTP request object.
     Returns:
         The response text or any set of values that can be turned into a
         Response object using
-        `make_response <http://flask.pocoo.org/docs/1.0/api/#flask.Flask.make_response>`.
+        #flask.Flask.make_response>`.
+        `make_response <http://flask.pocoo.org/docs/1.0/api/
     """
-    request_json = request.get_json()
-    if (request.args and 'message' in request.args):
+    if (request.args and 'message' in request.args and "model" in request.args):
         message = request.args.get('message')
-        return process_message(message)
-    elif (request_json and 'message' in request_json):
-        message = request_json['message']
-        return process_message(message)
+        if request.args.get("model") == "LSTM":
+            return process_LSTM_message(message)
+        elif request.args.get("model") == "kNN":
+            return process_kNN_message(message)
     else:
         return 'Please add a "message" argument to the request.'
 
@@ -138,9 +162,10 @@ def main(request):
         'Access-Control-Allow-Origin': '*'
     }
 
-    return (hello_world(request), 200, headers)
+    return (handle_request(request), 200, headers)
 
 
 # Uncomment code below for debugging
-# if __name__ == '__main__':
-#     print(process_message("Hello, this is a very bad review. There is simply no worse review like this in the entire universe"))
+if __name__ == '__main__':
+    print(process_kNN_message(
+        "This was terrible, just really bad. Not a good experience"))
