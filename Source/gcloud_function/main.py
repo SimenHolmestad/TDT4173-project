@@ -108,8 +108,7 @@ def load_from_dump(filename):
 def process_kNN_message(message):
     response = requests.get(
         "https://storage.googleapis.com/tdt4173-functions-data-bucket/kNNClassifier.bin")
-    open("kNNClassifier.bin", "wb").write(response.content)
-    kNNClassifier = load_from_dump("kNNClassifier.bin")
+    kNNClassifier = pickle.loads(response.content)
     vectorizer = load_from_dump("TFIDFvectorizer.bin")
 
     transformed_message = vectorizer.transform([message])
