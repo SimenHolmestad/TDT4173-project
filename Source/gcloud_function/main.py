@@ -1,10 +1,10 @@
-from numpy.lib.function_base import vectorize
-#from langdetect import detect
-#import langdetect
-#from gensim.parsing.preprocessing import remove_stopwords
-#import tensorflow as tf
-#from tensorflow.keras.models import load_model
-#from tensorflow.keras.preprocessing.sequence import pad_sequences
+import requests
+from langdetect import detect
+import langdetect
+from gensim.parsing.preprocessing import remove_stopwords
+import tensorflow as tf
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 try:
     import cPickle as pickle
 except:
@@ -106,8 +106,11 @@ def load_from_dump(filename):
 
 
 def process_kNN_message(message):
-    vectorizer = load_from_dump("TFIDFvectorizer.bin")
+    response = requests.get(
+        "https://storage.googleapis.com/tdt4173-functions-data-bucket/kNNClassifier.bin")
+    open("kNNClassifier.bin", "wb").write(response.content)
     kNNClassifier = load_from_dump("kNNClassifier.bin")
+    vectorizer = load_from_dump("TFIDFvectorizer.bin")
 
     transformed_message = vectorizer.transform([message])
     final_prediction = kNNClassifier.predict(transformed_message)[0] + 1
