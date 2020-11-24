@@ -31,7 +31,7 @@ tfidf = TfidfVectorizer(sublinear_tf=True, min_df=5, encoding='utf-8')
 
 print("Splitting dataset...")
 X_train, X_test, y_train, y_test = train_test_split(
-    df.training, df.label, random_state=0)
+    df.training, df.label, random_state=0, test_size=0.05)
 print("Vectorizing...")
 training_features = tfidf.fit_transform(X_train)
 test_features = tfidf.transform(X_test)
