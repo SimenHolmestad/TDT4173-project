@@ -1,0 +1,6 @@
+# Function dependencies, for example:
+# package>=version
+numpy==1.18.5
+langdetect
+gensim
+tensorflow
