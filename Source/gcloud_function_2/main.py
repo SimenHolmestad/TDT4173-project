@@ -67,3 +67,7 @@ def main(request):
     }
 
     return (handle_request(request), 200, headers)
+
+
+# if __name__ == '__main__':
+ #   print(process_message("This was terrible, just really bad. Not a good experience"))

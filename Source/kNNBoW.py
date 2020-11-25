@@ -26,7 +26,7 @@ def create_balanced_dataset(filename):
         dfs.append(df[df["label"] == x].sample(n=n))
 
     # Return the concatinated dataframes in randomised order
-    return pd.concat(dfs).sample(frac=1.0)
+    return pd.concat(dfs).sample(frac=1)
 
 
 path = Path(__file__).parent / "../Data/output_final2.csv"
@@ -40,7 +40,7 @@ X_train, X_test, y_train, y_test = train_test_split(
     df.training, df.label, random_state=0, test_size=0.05)
 print("Vectorizing...")
 training_features = tfidf.fit_transform(X_train)
-with open("Source/gcloud_function/TFIDFvectorizer.bin", "wb") as file:
+with open("Source/gcloud_function_2/TFIDFvectorizer.bin", "wb") as file:
     pickle.dump(tfidf, file)
 test_features = tfidf.transform(X_test)
 
@@ -49,7 +49,7 @@ classifier = KNeighborsClassifier(n_neighbors=20)
 print("Fitting...")
 classifier.fit(training_features, y_train)
 
-with open("Source/gcloud_function/kNNClassifier.bin", "wb") as file:
+with open("Source/gcloud_function_2/kNNClassifier.bin", "wb") as file:
     pickle.dump(classifier, file)
 
 print("Predicting...")
