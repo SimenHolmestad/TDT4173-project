@@ -5,7 +5,8 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
-CHARACTERS_TO_REMOVE = [";", "%", "=", "&", ":", "|", "/", "\"", ".", ",", "!", "(", ")", "-", "+", "–", "_", "\n", "?", "*", "$", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "#"]
+CHARACTERS_TO_REMOVE = [";", "%", "=", "&", ":", "|", "/", "\"", ".", ",", "!",
+                        "(", ")", "-", "+", "–", "_", "\n", "?", "*", "$", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "#"]
 
 
 def process_text(text):
@@ -76,7 +77,7 @@ def do_prediction(text):
     return list(model.predict(X)[0])
 
 
-def process_message(message):
+def process_LSTM_message(message):
     processed_text, error_message = process_text(message)
     if (error_message):
         return "Error: " + error_message
@@ -94,22 +95,19 @@ def process_message(message):
     return return_text
 
 
-def hello_world(request):
+def handle_request(request):
     """Responds to any HTTP request.
     Args:
         request (flask.Request): HTTP request object.
     Returns:
         The response text or any set of values that can be turned into a
         Response object using
-        `make_response <http://flask.pocoo.org/docs/1.0/api/#flask.Flask.make_response>`.
+        #flask.Flask.make_response>`.
+        `make_response <http://flask.pocoo.org/docs/1.0/api/
     """
-    request_json = request.get_json()
     if (request.args and 'message' in request.args):
         message = request.args.get('message')
-        return process_message(message)
-    elif (request_json and 'message' in request_json):
-        message = request_json['message']
-        return process_message(message)
+        return process_LSTM_message(message)
     else:
         return 'Please add a "message" argument to the request.'
 
@@ -138,9 +136,10 @@ def main(request):
         'Access-Control-Allow-Origin': '*'
     }
 
-    return (hello_world(request), 200, headers)
+    return (handle_request(request), 200, headers)
 
 
 # Uncomment code below for debugging
 # if __name__ == '__main__':
-#     print(process_message("Hello, this is a very bad review. There is simply no worse review like this in the entire universe"))
+#    print(process_LSTM_message(
+#        "This was terrible, just really bad. Not a good experience"))
