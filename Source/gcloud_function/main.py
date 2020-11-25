@@ -66,14 +66,14 @@ def process_text(text):
 
 
 def do_prediction(text):
-    f = open("balanced_model_2epochs_tokenizer.json", "r")
+    f = open("balanced_model_3epochs_tokenizer.json", "r")
     json_string = f.read()
     f.close()
     tokenizer = tf.keras.preprocessing.text.tokenizer_from_json(json_string)
     X = tokenizer.texts_to_sequences([text])
     X = pad_sequences(X, maxlen=100)
 
-    model = load_model("balanced_model_2epochs.h5", compile=True)
+    model = load_model("balanced_model_3epochs.h5", compile=True)
     return list(model.predict(X)[0])
 
 

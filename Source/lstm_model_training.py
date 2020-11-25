@@ -60,7 +60,8 @@ def create_balanced_dataset(filename):
         # x_df = df[df["label"]==x]
         number_of_rows = len(df[df["label"] == x].index)
         n = min(cap_number, number_of_rows)
-        dfs.append(df[df["label"] == x].sample(n=n))  # Sample chooses random rows
+        # Sample chooses random rows
+        dfs.append(df[df["label"] == x].sample(n=n))
 
     # Return the concatinated dataframes in randomised order
     return pd.concat(dfs).sample(frac=1.0)
@@ -74,10 +75,11 @@ def main():
         sys.exit()
 
     data_filepath = sys.argv[1]
-    output_directory = sys.argv[1]
-    model_base_name = 'balanced_model_2epochs'
+    output_directory = sys.argv[2]
+    model_base_name = 'balanced_model_3epochs'
     model_file_path = model_base_name + '.h5'
-    tokenizer_file_path = os.path.join(output_directory, model_base_name + '_tokenizer.json')
+    tokenizer_file_path = os.path.join(
+        output_directory, model_base_name + '_tokenizer.json')
 
     print("Creating balanced dataset")
     df = create_balanced_dataset(data_filepath)
@@ -121,7 +123,7 @@ def main():
                   optimizer='adam', metrics=['accuracy'])
 
     # Define constants for training
-    epochs = 2
+    epochs = 3
     batch_size = 64
 
     history = model.fit(X_train, Y_train, epochs=epochs,
