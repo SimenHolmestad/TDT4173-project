@@ -1,8 +1,71 @@
 import requests
+import langdetect
+from langdetect import detect
+from gensim.parsing.preprocessing import remove_stopwords
+
 try:
     import cPickle as pickle
 except:
     import pickle
+
+CHARACTERS_TO_REMOVE = [";", "%", "=", "&", ":", "|", "/", "\"", ".", ",", "!",
+                        "(", ")", "-", "+", "–", "_", "\n", "?", "*", "$", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "#"]
+
+
+def process_text(text):
+    """Process review text for machine learning algorithm.
+
+    If the input is not in english or langdetect fails, an error
+    message will be returned together with the original input text.
+
+    Args:
+        text (string): The text to be processed
+
+    Returns tuple with elements:
+        result (String): The processed text (or just the input text in case of error)
+        error (None or String): Error message if there is an error
+    """
+
+    # Check language of text
+    try:
+        language = detect(text)
+    except langdetect.lang_detect_exception.LangDetectException:
+        return text, "Language detection failed for review text"
+
+    # Return an error if text is not in english
+    if language != 'en':
+        return text, "Review does not seem to be in english. Got language code \"{}\"".format(language)
+
+    # Remove special characters
+    for character_to_remove in CHARACTERS_TO_REMOVE:
+        text = text.replace(character_to_remove, " ")
+
+    # Remove multiple spaces after one another
+    for i in range(10, 1, -1):
+        text = text.replace(" " * i, " ")
+
+    # Lovercase text
+    text = text.lower()
+
+    # Remove last character if it is a space
+    if text[-1] == " ":
+        text = text[:-1]
+
+    # Remove stopwords
+    text = remove_stopwords(text)
+
+    if text == "":
+        return text, "Review was empty after removing stop words"
+
+    # Find number of words after stop words are removed
+    number_of_words = len(text.split(" "))
+
+    # Return error if number of words after removing stop words is more than 100.
+    if number_of_words > 100:
+        return text, "Review contained more than 100 words after removing stop words. Number of words where {}".format(str(number_of_words))
+
+    # Return successfully converted text
+    return text, None
 
 
 def load_from_dump(filename):
@@ -16,12 +79,18 @@ def process_message(message):
     kNNClassifier = pickle.loads(response.content)
     vectorizer = load_from_dump("TFIDFvectorizer.bin")
 
-    transformed_message = vectorizer.transform([message])
+    processed_text, error_message = process_text(message)
+    if (error_message):
+        return "Error: " + error_message
+
+    transformed_message = vectorizer.transform([processed_text])
     final_prediction = kNNClassifier.predict(transformed_message)[0] + 1
     return_text = "Final prediction is: " + str(final_prediction) + " star"
 
     if final_prediction != 1:
         return_text += "s"
+    return_text += "|Processed text was: " + processed_text
+
     return return_text
 
 
