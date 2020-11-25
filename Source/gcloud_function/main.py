@@ -1,14 +1,9 @@
-import requests
 from langdetect import detect
 import langdetect
 from gensim.parsing.preprocessing import remove_stopwords
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-try:
-    import cPickle as pickle
-except:
-    import pickle
 
 CHARACTERS_TO_REMOVE = [";", "%", "=", "&", ":", "|", "/", "\"", ".", ",", "!",
                         "(", ")", "-", "+", "–", "_", "\n", "?", "*", "$", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "#"]
@@ -100,26 +95,6 @@ def process_LSTM_message(message):
     return return_text
 
 
-def load_from_dump(filename):
-    with open(filename, "rb") as file:
-        return pickle.load(file)
-
-
-def process_kNN_message(message):
-    response = requests.get(
-        "https://storage.googleapis.com/tdt4173-functions-data-bucket/kNNClassifier.bin")
-    kNNClassifier = pickle.loads(response.content)
-    vectorizer = load_from_dump("TFIDFvectorizer.bin")
-
-    transformed_message = vectorizer.transform([message])
-    final_prediction = kNNClassifier.predict(transformed_message)[0] + 1
-    return_text = "Final prediction is: " + str(final_prediction) + " star"
-
-    if final_prediction != 1:
-        return_text += "s"
-    return return_text
-
-
 def handle_request(request):
     """Responds to any HTTP request.
     Args:
@@ -130,12 +105,9 @@ def handle_request(request):
         #flask.Flask.make_response>`.
         `make_response <http://flask.pocoo.org/docs/1.0/api/
     """
-    if (request.args and 'message' in request.args and "model" in request.args):
+    if (request.args and 'message' in request.args):
         message = request.args.get('message')
-        if request.args.get("model") == "LSTM":
-            return process_LSTM_message(message)
-        elif request.args.get("model") == "kNN":
-            return process_kNN_message(message)
+        return process_LSTM_message(message)
     else:
         return 'Please add a "message" argument to the request.'
 
@@ -168,6 +140,6 @@ def main(request):
 
 
 # Uncomment code below for debugging
-if __name__ == '__main__':
-    print(process_kNN_message(
-        "This was terrible, just really bad. Not a good experience"))
+# if __name__ == '__main__':
+#    print(process_LSTM_message(
+#        "This was terrible, just really bad. Not a good experience"))
