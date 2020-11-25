@@ -3,3 +3,5 @@
 numpy==1.18.5
 sklearn
 requests
+langdetect
+gensim
